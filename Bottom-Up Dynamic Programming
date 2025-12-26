@@ -1,0 +1,39 @@
+int minDifficulty(List<int> jobDifficulty, int d) {
+  int n = jobDifficulty.length;
+  if (n < d) return -1;
+
+  const int INF = 1 << 30;
+
+  // dp for day 1
+  List<int> prevDp = List.filled(n, INF);
+  int maxVal = 0;
+  for (int i = 0; i < n; i++) {
+    if (jobDifficulty[i] > maxVal) {
+      maxVal = jobDifficulty[i];
+    }
+    prevDp[i] = maxVal;
+  }
+
+  // days 2 to d
+  for (int day = 2; day <= d; day++) {
+    List<int> currDp = List.filled(n, INF);
+
+    for (int i = day - 1; i < n; i++) {
+      int maxToday = 0;
+
+      for (int j = i; j >= day - 1; j--) {
+        if (jobDifficulty[j] > maxToday) {
+          maxToday = jobDifficulty[j];
+        }
+        currDp[i] =
+            currDp[i] < prevDp[j - 1] + maxToday
+                ? currDp[i]
+                : prevDp[j - 1] + maxToday;
+      }
+    }
+
+    prevDp = currDp;
+  }
+
+  return prevDp[n - 1];
+}
