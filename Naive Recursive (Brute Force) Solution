@@ -1,0 +1,38 @@
+int INF = 1 << 30;
+
+int minDifficultyNaive(List<int> jobs, int d) {
+  int n = jobs.length;
+  if (n < d) return -1;
+  return dfs(jobs, d, 0);
+}
+
+int dfs(List<int> jobs, int d, int start) {
+  int n = jobs.length;
+
+  // remaining jobs < remaining days
+  if (n - start < d) return -1;
+
+  // last day takes all remaining jobs
+  if (d == 1) {
+    int maxVal = 0;
+    for (int i = start; i < n; i++) {
+      if (jobs[i] > maxVal) maxVal = jobs[i];
+    }
+    return maxVal;
+  }
+
+  int minCost = INF;
+  int maxToday = 0;
+
+  for (int i = start; i <= n - d; i++) {
+    if (jobs[i] > maxToday) maxToday = jobs[i];
+
+    int remaining = dfs(jobs, d - 1, i + 1);
+    if (remaining != -1) {
+      int total = maxToday + remaining;
+      if (total < minCost) minCost = total;
+    }
+  }
+
+  return minCost;
+}
